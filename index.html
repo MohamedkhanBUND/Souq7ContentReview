@@ -48,6 +48,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--gray);color:var(--black);
 .media-item{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f0;flex-shrink:0;cursor:pointer;}
 .media-item img,.media-item video{display:block;width:100%;height:100%;object-fit:cover;}
 .media-single .media-item{width:200px;height:356px;}
+.video-btn-item{background:#0A0A0A !important;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:10px;}
+.video-play-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;}
+.video-play-icon{width:60px;height:60px;background:#E50695;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;margin-bottom:12px;}
+.video-play-label{font-size:13px;color:#fff;font-weight:700;margin-bottom:6px;}
+.video-play-hint{font-size:11px;color:#888;}
 .media-carousel{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;}
 .media-carousel .media-item{width:140px;height:140px;flex-shrink:0;}
 .media-label-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:8px 10px;font-size:11px;color:#fff;font-weight:600;}
@@ -712,9 +717,19 @@ function renderMedia(post){
   var isMulti=post.media.length>1;
   var gridClass=isMulti?"media-carousel":"media-single";
   var items=post.media.map(function(m){
-    var fn="openLightbox('"+m.url+"','"+m.type+"')";
-    if(m.type==="video"){ return "<div class=\"media-item\" onclick=\""+fn+"\"><video src=\""+m.url+"\" muted preload=\"metadata\" style=\"width:100%;height:100%;object-fit:cover;\"></video><div class=\"play-icon\">&#9654;</div><div class=\"media-label-overlay\">"+m.label+"</div></div>"; }
-    else { return "<div class=\"media-item\" onclick=\""+fn+"\"><img src=\""+m.url+"\" loading=\"lazy\"><div class=\"media-label-overlay\">"+m.label+"</div></div>"; }
+    if(m.type==="video"){
+      // Video: show button that opens Dropbox in new tab
+      var dl1url=m.url.replace("&dl=0","&dl=1").replace("?dl=0","?dl=1");
+      return "<div class=\"media-item video-btn-item\" onclick=\"window.open('"+m.url+"','_blank')\">"+
+        "<div class=\"video-play-btn\">"+
+        "<div class=\"video-play-icon\">&#9654;</div>"+
+        "<div class=\"video-play-label\">"+m.label+"</div>"+
+        "<div class=\"video-play-hint\">اضغط لمشاهدة الفيديو</div>"+
+        "</div></div>";
+    } else {
+      var fn="openLightbox('"+m.url+"','"+m.type+"')";
+      return "<div class=\"media-item\" onclick=\""+fn+"\"><img src=\""+m.url+"\" loading=\"lazy\"><div class=\"media-label-overlay\">"+m.label+"</div></div>";
+    }
   }).join("");
   return "<div class=\""+gridClass+"\">"+items+"</div>";
 }
